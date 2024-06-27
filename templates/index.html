@@ -2,49 +2,91 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Earthquake Data</title>
+    <title>字符串和文本处理</title>
 </head>
 <body>
-    <h1>Earthquake Data</h1>
-    <form action="/query" method="post">
-        <label for="latitude">Latitude:</label>
-        <input type="text" id="latitude" name="latitude">
-        <label for="degrees">Degrees:</label>
-        <input type="text" id="degrees" name="degrees">
-        <button type="submit">Query</button>
+    <h1>字符串和文本处理</h1>
+    <form method="post" action="{{ url_for('task10a') }}">
+        <label for="string_s">字符串 S:</label>
+        <input type="text" id="string_s" name="string_s" value="{{ request.form.string_s }}" required>
+        <br><br>
+        <label for="text_t">文本 T:</label>
+        <textarea id="text_t" name="text_t" rows="4" cols="50" required>{{ request.form.text_t }}</textarea>
+        <br><br>
+        <label for="char_c">字符 C:</label>
+        <input type="text" id="char_c" name="char_c" value="{{ request.form.char_c }}" required>
+        <br><br>
+        <label for="stop_words">停止词 (用逗号分隔):</label>
+        <input type="text" id="stop_words" name="stop_words" value="{{ request.form.stop_words }}" required>
+        <br><br>
+        <input type="submit" value="10(ab) 功能按钮：显示结果" formaction="{{ url_for('task10a') }}">
+        <input type="submit" value="10(c) 功能按钮：显示结果" formaction="{{ url_for('task10b') }}">
+        <input type="submit" value="11(a) 功能按钮：显示结果" formaction="{{ url_for('task11a') }}">
+        <input type="submit" value="11(b) 功能按钮：显示结果" formaction="{{ url_for('task11b') }}">
+        <input type="submit" value="12(a) 功能按钮：显示结果" formaction="{{ url_for('task12a') }}">
+        <input type="submit" value="12(b) 功能按钮：显示结果" formaction="{{ url_for('task12b') }}">
     </form>
-    <form action="/check_delete" method="post">
-        <label for="net_value">Net Value:</label>
-        <input type="text" id="net_value" name="net_value">
-        <button type="submit">Check and Delete</button>
-    </form>
-    <form action="/insert" method="post">
-        <h2>Insert New Data</h2>
-        <label for="time">Time:</label>
-        <input type="text" id="time" name="time">
-        <label for="latitude">Latitude:</label>
-        <input type="text" id="latitude" name="latitude">
-        <label for="longitude">Longitude:</label>
-        <input type="text" id="longitude" name="longitude">
-        <label for="depth">Depth:</label>
-        <input type="text" id="depth" name="depth">
-        <label for="mag">Magnitude:</label>
-        <input type="text" id="mag" name="mag">
-        <label for="net">Net:</label>
-        <input type="text" id="net" name="net">
-        <label for="id">ID:</label>
-        <input type="text" id="id" name="id">
-        <button type="submit">Insert</button>
-    </form>
-    <form action="/update" method="post">
-        <h2>Update Data</h2>
-        <label for="id">ID:</label>
-        <input type="text" id="id" name="id">
-        <label for="column">Column:</label>
-        <input type="text" id="column" name="column">
-        <label for="value">Value:</label>
-        <input type="text" id="value" name="value">
-        <button type="submit">Update</button>
-    </form>
+
+    {% if result_10a %}
+    <h2>10(a) 结果</h2>
+    <p>查询时间: {{ query_time }} 秒</p>
+    <h3>字符计数</h3>
+    <ul>
+        {% for char, count in count_s.items() %}
+            <li>{{ char }}: {{ count }}</li>
+        {% endfor %}
+    </ul>
+    <h3>字符频率</h3>
+    <ul>
+        {% for char, freq in freq_s.items() %}
+            <li>{{ char }}: {{ freq }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if result_10b %}
+    <h2>10(b) 结果</h2>
+    <p>查询时间: {{ query_time }} 秒</p>
+    <h3>替换后的文本</h3>
+    <p>{{ replaced_t }}</p>
+    {% endif %}
+
+    {% if result_11a %}
+    <h2>11(a) 结果</h2>
+    <p>查询时间: {{ query_time }} 秒</p>
+    <h3>单词总数</h3>
+    <p>{{ word_count }}</p>
+    {% endif %}
+
+    {% if result_11b %}
+    <h2>11(b) 结果</h2>
+    <p>查询时间: {{ query_time }} 秒</p>
+    <h3>按字符分组的单词</h3>
+    <ul>
+        {% for char, words in words_by_char.items() %}
+            <li>{{ char }}: {{ words }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if result_12a %}
+    <h2>12(a) 结果</h2>
+    <p>查询时间: {{ query_time }} 秒</p>
+    <h3>移除的停止词数量</h3>
+    <p>{{ removed_count }}</p>
+    <h3>剩余文本</h3>
+    <p>{{ remaining_text }}</p>
+    {% endif %}
+
+    {% if result_12b %}
+    <h2>12(b) 结果</h2>
+    <p>查询时间: {{ query_time }} 秒</p>
+    <h3>双字组</h3>
+    <ul>
+        {% for bigram in bigrams %}
+            <li>{{ bigram[0] }} {{ bigram[1] }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
 </body>
 </html>
