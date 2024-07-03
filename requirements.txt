@@ -1,5 +1,4 @@
 gunicorn
 Werkzeug==3.0.3
 Flask==3.0.3
-pandas
 pyodbc
