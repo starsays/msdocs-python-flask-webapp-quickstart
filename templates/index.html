@@ -2,91 +2,175 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>字符串和文本处理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <h1>字符串和文本处理</h1>
-    <form method="post" action="{{ url_for('task10a') }}">
-        <label for="string_s">字符串 S:</label>
-        <input type="text" id="string_s" name="string_s" value="{{ request.form.string_s }}" required>
-        <br><br>
-        <label for="text_t">文本 T:</label>
-        <textarea id="text_t" name="text_t" rows="4" cols="50" required>{{ request.form.text_t }}</textarea>
-        <br><br>
-        <label for="char_c">字符 C:</label>
-        <input type="text" id="char_c" name="char_c" value="{{ request.form.char_c }}" required>
-        <br><br>
-        <label for="stop_words">停止词 (用逗号分隔):</label>
-        <input type="text" id="stop_words" name="stop_words" value="{{ request.form.stop_words }}" required>
-        <br><br>
-        <input type="submit" value="10(ab) 功能按钮：显示结果" formaction="{{ url_for('task10a') }}">
-        <input type="submit" value="10(c) 功能按钮：显示结果" formaction="{{ url_for('task10b') }}">
-        <input type="submit" value="11(a) 功能按钮：显示结果" formaction="{{ url_for('task11a') }}">
-        <input type="submit" value="11(b) 功能按钮：显示结果" formaction="{{ url_for('task11b') }}">
-        <input type="submit" value="12(a) 功能按钮：显示结果" formaction="{{ url_for('task12a') }}">
-        <input type="submit" value="12(b) 功能按钮：显示结果" formaction="{{ url_for('task12b') }}">
+    <h1>Food Management</h1>
+    
+    <h2>Food Table</h2>
+    <form id="food-form" action="/manage_food" method="post">
+        <input type="hidden" name="action" id="action">
+        <label for="food">Food:</label>
+        <input type="text" id="food" name="food"><br>
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity"><br>
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price"><br>
+        <button type="button" onclick="setAction('add')">Add</button>
+        <button type="button" onclick="setAction('modify')">Modify</button>
+        <button type="button" onclick="setAction('delete')">Delete</button>
+        <button type="submit">Refresh</button>
     </form>
 
-    {% if result_10a %}
-    <h2>10(a) 结果</h2>
-    <p>查询时间: {{ query_time }} 秒</p>
-    <h3>字符计数</h3>
-    <ul>
-        {% for char, count in count_s.items() %}
-            <li>{{ char }}: {{ count }}</li>
-        {% endfor %}
-    </ul>
-    <h3>字符频率</h3>
-    <ul>
-        {% for char, freq in freq_s.items() %}
-            <li>{{ char }}: {{ freq }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
+    <h2>Food List</h2>
+    <table id="food-table">
+        <thead>
+            <tr>
+                <th>Food</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for food in foods %}
+            <tr>
+                <td>{{ food.food }}</td>
+                <td>{{ food.quantity }}</td>
+                <td>{{ food.price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-    {% if result_10b %}
-    <h2>10(b) 结果</h2>
-    <p>查询时间: {{ query_time }} 秒</p>
-    <h3>替换后的文本</h3>
-    <p>{{ replaced_t }}</p>
-    {% endif %}
+    <h2>Pie Chart</h2>
+    <form id="pie-form" action="/pie_chart" method="post">
+        <label for="n_pie">N:</label>
+        <input type="number" id="n_pie" name="n"><br>
+        <button type="submit">Generate Pie Chart</button>
+    </form>
+    <canvas id="pieChart"></canvas>
 
-    {% if result_11a %}
-    <h2>11(a) 结果</h2>
-    <p>查询时间: {{ query_time }} 秒</p>
-    <h3>单词总数</h3>
-    <p>{{ word_count }}</p>
-    {% endif %}
+    <h2>Horizontal Bar Chart</h2>
+    <form id="bar-form" action="/bar_chart" method="post">
+        <label for="n_bar">N:</label>
+        <input type="number" id="n_bar" name="n"><br>
+        <button type="submit">Generate Bar Chart</button>
+    </form>
+    <canvas id="barChart"></canvas>
 
-    {% if result_11b %}
-    <h2>11(b) 结果</h2>
-    <p>查询时间: {{ query_time }} 秒</p>
-    <h3>按字符分组的单词</h3>
-    <ul>
-        {% for char, words in words_by_char.items() %}
-            <li>{{ char }}: {{ words }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
+    <h2>Scatter Chart</h2>
+    <form id="scatter-form" action="/add_point" method="post">
+        <label for="x">X:</label>
+        <input type="number" id="x" name="x"><br>
+        <label for="y">Y:</label>
+        <input type="number" id="y" name="y"><br>
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity"><br>
+        <button type="submit">Add Point</button>
+    </form>
+    <canvas id="scatterChart"></canvas>
 
-    {% if result_12a %}
-    <h2>12(a) 结果</h2>
-    <p>查询时间: {{ query_time }} 秒</p>
-    <h3>移除的停止词数量</h3>
-    <p>{{ removed_count }}</p>
-    <h3>剩余文本</h3>
-    <p>{{ remaining_text }}</p>
-    {% endif %}
+    <script>
+        function setAction(action) {
+            document.getElementById('action').value = action;
+            document.getElementById('food-form').submit();
+        }
 
-    {% if result_12b %}
-    <h2>12(b) 结果</h2>
-    <p>查询时间: {{ query_time }} 秒</p>
-    <h3>双字组</h3>
-    <ul>
-        {% for bigram in bigrams %}
-            <li>{{ bigram[0] }} {{ bigram[1] }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
+        document.getElementById('pie-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            fetch('/pie_chart', {
+                method: 'POST',
+                body: new FormData(event.target)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const ctx = document.getElementById('pieChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            data: data.quantities,
+                            backgroundColor: data.colors,
+                        }]
+                    },
+                    options: {
+                        responsive: true
+                    }
+                });
+            });
+        });
+
+        document.getElementById('bar-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            fetch('/bar_chart', {
+                method: 'POST',
+                body: new FormData(event.target)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const ctx = document.getElementById('barChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            data: data.prices,
+                            backgroundColor: 'blue',
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true
+                    }
+                });
+            });
+        });
+
+        function renderScatterChart(data) {
+            const ctx = document.getElementById('scatterChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: data.datasets
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        document.getElementById('scatter-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            fetch('/add_point', {
+                method: 'POST',
+                body: new FormData(event.target)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return fetch('/scatter_chart');
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                renderScatterChart(data);
+            });
+        });
+
+        // Initial rendering of scatter chart
+        fetch('/scatter_chart')
+            .then(response => response.json())
+            .then(data => {
+                renderScatterChart(data);
+            });
+    </script>
 </body>
 </html>
